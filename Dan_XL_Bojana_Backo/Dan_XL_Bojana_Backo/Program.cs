@@ -7,6 +7,7 @@ namespace Dan_XL_Bojana_Backo
     {
         public static object lockObject = new object();
         Random random = new Random();
+        public static string[] format = { "A3", "A4" };
         public static void PrintMessage(string message)
         {
             lock (lockObject)
@@ -23,11 +24,11 @@ namespace Dan_XL_Bojana_Backo
             Printer printer = new Printer(true, true);
             Thread[] dokumenta = new Thread[brojDokumenata];
 
-            // kreiranje niti i pokretanje simulacije
+            // creating threads
             for (int i = 0; i < brojDokumenata; i++)
             {
-                int function = random.Next(0, 2);
-                if (function == 0)
+                string form = format[random.Next(format.Length)];
+                if (form == "A3")
                 {
                     dokumenta[i] = new Thread(new ThreadStart(printer.PrintingA3));
                 }

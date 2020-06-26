@@ -11,7 +11,6 @@ namespace Dan_XL_Bojana_Backo
     class Printer
     {
         string[] orientation = { "portrait", "landscape" };
-        public string[] format = { "A3", "A4" };
         string[] color = { "DarkYellow", "DarkBlue", "DarkGreen", "DarkRed", "DarkMagenta", "Blue", "Green", "Magenta" };
         private bool printerA3IsFree;
         private bool printerA4IsFree;
@@ -22,6 +21,9 @@ namespace Dan_XL_Bojana_Backo
         private AutoResetEvent FreeA4;
 
         Random random = new Random();
+
+        public static int duzinaReda1 = 0;
+        public static int duzinaReda2 = 0;
 
         public Printer(bool printerA3IsFree, bool printerA4IsFree)
         {
@@ -64,6 +66,7 @@ namespace Dan_XL_Bojana_Backo
                 }
                 else
                 {
+                    duzinaReda1++;
                     action = PrinterAction.WAIT;
                 }
             }
@@ -73,6 +76,10 @@ namespace Dan_XL_Bojana_Backo
                     {
                         Program.PrintMessage(string.Format("{0} waiting for the printer A3 to release.", documentToPrint));
                         FreeA3.WaitOne();
+                        lock (checkLock)
+                        {
+                            duzinaReda1--;
+                        }
                     }
                     break;
                 case PrinterAction.PRINTING:
@@ -90,9 +97,17 @@ namespace Dan_XL_Bojana_Backo
 
             lock (checkLock)
             {
-                FreeA3.Set();
-                printerA3IsFree = true;
-                Program.PrintMessage(string.Format("{0} ends printing. It's free to print another A4 document.", Thread.CurrentThread.Name));
+                if (duzinaReda1 > 0)
+                {
+                    FreeA3.Set();
+                }
+                else
+                {
+                    printerA3IsFree = true;
+                    Program.PrintMessage(string.Format("{0} ends printing. It's free to print another A4 document.", Thread.CurrentThread.Name));
+                }
+                
+                
             }
         }
 
@@ -126,6 +141,7 @@ namespace Dan_XL_Bojana_Backo
                 }
                 else
                 {
+                    duzinaReda2++;
                     action = PrinterAction.WAIT;
                 }
 
@@ -136,6 +152,10 @@ namespace Dan_XL_Bojana_Backo
                     {
                         Program.PrintMessage(string.Format("{0} waiting for the printer A4 to release.", documentToPrint));
                         FreeA3.WaitOne();
+                        lock (checkLock)
+                        {
+                            duzinaReda2--;
+                        }
                     }
                     break;
                 case PrinterAction.PRINTING:
@@ -155,8 +175,15 @@ namespace Dan_XL_Bojana_Backo
 
             lock (checkLock)
             {
-                FreeA4.Set();
-                printerA4IsFree = true;
+                if (duzinaReda2 > 0)
+                {
+                    FreeA4.Set();
+                }
+                else
+                {
+                    printerA4IsFree = true;
+                }
+                
                 Program.PrintMessage(string.Format("{0} ends printing. It's free to print another A4 document.", Thread.CurrentThread.Name));
             }
         }
