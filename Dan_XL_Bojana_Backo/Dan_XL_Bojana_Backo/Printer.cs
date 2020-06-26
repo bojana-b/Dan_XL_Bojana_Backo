@@ -84,7 +84,7 @@ namespace Dan_XL_Bojana_Backo
                     break;
                 case PrinterAction.PRINTING:
                     {
-                        // nothing to do
+                        
                     }
                     break;
             }
@@ -104,10 +104,9 @@ namespace Dan_XL_Bojana_Backo
                 else
                 {
                     printerA3IsFree = true;
-                    Program.PrintMessage(string.Format("{0} ends printing. It's free to print another A4 document.", Thread.CurrentThread.Name));
                 }
                 
-                
+                Program.PrintMessage(string.Format("{0} ends printing. It's free to print another A4 document.", Thread.CurrentThread.Name));
             }
         }
 
